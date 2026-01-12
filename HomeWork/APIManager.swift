@@ -26,7 +26,6 @@ class APIManager {
                 print(error!.localizedDescription)
                 return
             }
-            
             guard let dataPrint = data else { return }
             
             do {
