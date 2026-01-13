@@ -11,41 +11,32 @@ class CellCustom: UITableViewCell {
     
     static let identifier = "CellCustom"
    
-    var imageCell: UIImageView {
+    var imageCell: UIImageView = {
         let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
-    }
+    }()
     
-    var titleCell: UILabel {
+    var titleCell: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Hello"
         return label
-    }
-    
-    
-    func setLayot() {
-        NSLayoutConstraint.activate([
-            imageCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageCell.topAnchor.constraint(equalTo: contentView.topAnchor),
-        ])
-    }
-    
-    func setData(frome model: UnsplashModel) {
-    }
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setLayot()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setConstraint() {
+        contentView.frame = CGRect(x: 0, y: 0, width: 400, height: 200)
+        contentView.addSubview(imageCell)
+        contentView.addSubview(titleCell)
+        imageCell.frame = contentView.bounds
+    }
+    
+    func setData(frome model: UnsplashModel) {
+    }
     
 }
-
-let cast = CellCustom(
-    style: .default,
-    reuseIdentifier: CellCustom.identifier
-)
