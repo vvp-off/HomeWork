@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		F4C33E0F2E9EC2B9002008F1 /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeWork.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4C33E0F2E9EC2B9002008F1 /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HomeWork.app; path = "/Users/vp/Xcode Pojects/HomeWork/build/Debug-iphoneos/HomeWork.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,16 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				F4C33E112E9EC2B9002008F1 /* HomeWork */,
-				F4C33E102E9EC2B9002008F1 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		F4C33E102E9EC2B9002008F1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F4C33E0F2E9EC2B9002008F1 /* HomeWork.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,7 +99,7 @@
 			mainGroup = F4C33E062E9EC2B9002008F1;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = F4C33E102E9EC2B9002008F1 /* Products */;
+			productRefGroup = F4C33E062E9EC2B9002008F1;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (

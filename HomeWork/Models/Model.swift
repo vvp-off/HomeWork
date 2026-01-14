@@ -11,6 +11,7 @@ struct UnsplashModel: Decodable {
     let id: String
     let slug: String
     let urls: Urls
+    let alt_description: String
 }
 
 struct Urls: Decodable {

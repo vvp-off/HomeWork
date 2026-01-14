@@ -29,7 +29,7 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         confegerUI()
-        updateImage()
+//        updateImage()
     }
     
     func confegerUI() {
@@ -51,13 +51,13 @@ class DetailViewController: UIViewController {
         ])
     }
     
-    func updateImage() {
-        APIManager.shared.getImage { [weak self] imageUrls in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.image.image = UIImage(data: try! Data(contentsOf: URL(string: imageUrls[0])!))
-            }
-        }
-    }
+//    func updateImage() {
+//        APIManager.shared.getImage { [weak self] imageUrls in
+//            DispatchQueue.main.async {
+//                guard let self else { return }
+//                self.image.image = UIImage(data: try! Data(contentsOf: URL(string: imageUrls[0])!))
+//            }
+//        }
+//    }
     
 }

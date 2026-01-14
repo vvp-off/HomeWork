@@ -8,42 +8,44 @@
 import UIKit
 
 class TableViewController: UITableViewController {
-    var unsplasModels: [String] = []
+    var unsplashModels: [UnsplashModel] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.rowHeight = 250
         updata()
+        
     }
 
    private func updata() {
-        APIManager.shared.getImage { [weak self] imageUrls in
+       APIManager.shared.getImage { [weak self] modelsUnspl   in
             DispatchQueue.main.async {
                 guard let self else { return }
-                self.unsplasModels = imageUrls
+                self.unsplashModels = modelsUnspl
                 self.tableView.reloadData()
             }
         }
     }
 }
+
 //MARK: numberOfRowsInSection
 extension TableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        unsplasModels.count
+        unsplashModels.count
     }
 }
 
 //MARK: cellForRowAt
 extension TableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let urlString = unsplasModels[indexPath.row]
-        let cellCast = CellCustom(style: .subtitle, reuseIdentifier: CellCustom.identifier)
-        cellCast.imageCell.image = nil
-        cellCast.imageCell.load(from: urlString)
-        cellCast.titleCell.text = unsplasModels[indexPath.row]
-        tableView.rowHeight = 200
-        cellCast.setConstraint()
-        return cellCast
+        let modelSplh = unsplashModels[indexPath.row]
+        tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
+        cell.imageCell.load(from: modelSplh.urls.full)
+        cell.titleCell.text = modelSplh.alt_description
+        return cell
     }
 }
+

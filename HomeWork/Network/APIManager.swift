@@ -13,7 +13,7 @@ class APIManager {
     let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
     let urlHost = "https://api.unsplash.com"
     
-    func getImage(completion: @escaping ([String]) -> Void){
+    func getImage(completion: @escaping ([UnsplashModel]) -> Void){
         var urlComponents = URLComponents(string: urlHost)
         urlComponents?.path = "/photos"
         urlComponents?.queryItems = [URLQueryItem(name: "client_id", value: accessKey)]
@@ -30,11 +30,11 @@ class APIManager {
             
             do {
                 let result = try JSONDecoder().decode([UnsplashModel].self, from: dataPrint)
-                var images: [String] = []
+                var models: [UnsplashModel] = []
                 for model in result {
-                    images.append(model.urls.full)
+                    models.append(model)
                 }
-                completion(images)
+                completion(models)
             } catch { print(error.localizedDescription) }
         }
         task.resume()
