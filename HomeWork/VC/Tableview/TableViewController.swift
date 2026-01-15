@@ -49,3 +49,15 @@ extension TableViewController {
     }
 }
 
+extension TableViewController {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let DetailViewController = DetailViewController()
+        DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
+        DetailViewController.image.load(from: unsplashModels[indexPath.row].urls.full)
+        DetailViewController.modalPresentationStyle = .fullScreen
+        present(DetailViewController, animated: true) {
+            tableView.backgroundColor = .blue
+        }
+    }
+}
+
