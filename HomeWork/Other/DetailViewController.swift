@@ -13,7 +13,6 @@ class DetailViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    
     lazy var buttonBack: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Exit", for: .normal)

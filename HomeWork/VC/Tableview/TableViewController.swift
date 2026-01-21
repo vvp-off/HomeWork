@@ -9,6 +9,8 @@ import UIKit
 
 class TableViewController: UITableViewController {
     var unsplashModels: [UnsplashModel] = []
+    let cache = NSCache<AnyObject, UIImageView>()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,8 +45,18 @@ extension TableViewController {
         let modelSplh = unsplashModels[indexPath.row]
         tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
-        cell.imageCell.load(from: modelSplh.urls.full)
-        cell.titleCell.text = modelSplh.alt_description
+        
+        if let image = cache.object(forKey: indexPath.row as AnyObject) {
+            cell.imageCell.image = image.image
+            cell.titleCell.text = modelSplh.alt_description
+        } else {
+            let imagecell = UIImageView()
+            imagecell.load(from: modelSplh.urls.full!)
+            cache.setObject(imagecell, forKey: indexPath.row as AnyObject)
+            cell.imageCell.load(from: modelSplh.urls.full!)
+            cell.titleCell.text = modelSplh.alt_description
+        }
+        
         return cell
     }
 }
@@ -52,8 +64,19 @@ extension TableViewController {
 extension TableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let DetailViewController = DetailViewController()
-        DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
-        DetailViewController.image.load(from: unsplashModels[indexPath.row].urls.full)
+        
+        if let image = cache.object(forKey: indexPath.row as AnyObject) {
+            DetailViewController.image.image = image.image
+            DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
+        } else {
+//            let img = UIImageView()
+//            img.load(from: unsplashModels[indexPath.row].urls.full!)
+//            cache.setObject(img, forKey: indexPath.row as AnyObject)
+            
+            DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
+            DetailViewController.image.load(from: unsplashModels[indexPath.row].urls.full!)
+        }
+        
         DetailViewController.modalPresentationStyle = .fullScreen
         present(DetailViewController, animated: true) {
             tableView.backgroundColor = .blue

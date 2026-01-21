@@ -8,13 +8,13 @@
 import Foundation
 
 struct UnsplashModel: Decodable {
-    let id: String
-    let slug: String
+    let id: String?
+    let slug: String?
     let urls: Urls
-    let alt_description: String
+    let alt_description: String?
 }
 
 struct Urls: Decodable {
-    let regular: String
-    let full: String
+    let regular: String?
+    let full: String?
 }

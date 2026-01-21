@@ -31,13 +31,11 @@ class APIManager {
             do {
                 let result = try JSONDecoder().decode([UnsplashModel].self, from: dataPrint)
                 var models: [UnsplashModel] = []
-                for model in result {
-                    models.append(model)
-                }
+                for model in result { models.append(model) }
                 completion(models)
-            } catch { print(error.localizedDescription) }
+            }
+            catch { print(error.localizedDescription) }
         }
         task.resume()
-        print(urlRequest.absoluteString)
     }
 }
