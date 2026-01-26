@@ -31,6 +31,7 @@ class DetailViewController: UIViewController {
         textview.font = UIFont.systemFont(ofSize: 18)
         textview.textAlignment = .center
         textview.numberOfLines = 0
+        textview.backgroundColor = .purple.withAlphaComponent(0.5)
         return textview
     }()
     

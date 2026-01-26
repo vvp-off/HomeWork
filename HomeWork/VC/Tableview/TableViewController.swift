@@ -8,8 +8,20 @@
 import UIKit
 
 class TableViewController: UITableViewController {
-    var unsplashModels: [UnsplashModel] = []
+    var unsplashModels: [UnsplashModel]
     let cache = NSCache<AnyObject, UIImageView>()
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    init(unsplashModels: [UnsplashModel]) {
+        self.unsplashModels = unsplashModels
+        super.init(nibName: nil, bundle: nil)
+        tableView.reloadData()
+    }
+    
+    
     
 
     override func viewDidLoad() {
@@ -17,19 +29,19 @@ class TableViewController: UITableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = 250
-        updata()
-        
+        tableView.reloadData()
+        print(unsplashModels.count)
     }
 
-   private func updata() {
-       APIManager.shared.getImage { [weak self] modelsUnspl   in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.unsplashModels = modelsUnspl
-                self.tableView.reloadData()
-            }
-        }
-    }
+//   private func updata() {
+//       APIManager.shared.getImage { [weak self] modelsUnspl   in
+//            DispatchQueue.main.async {
+//                guard let self else { return }
+//                self.unsplashModels = modelsUnspl
+//                self.tableView.reloadData()
+//            }
+//        }
+//    }
 }
 
 //MARK: numberOfRowsInSection
