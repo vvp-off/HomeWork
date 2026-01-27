@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class TableViewController: UITableViewController {
+final class HomeTableViewController: UITableViewController {
     private var unsplashModels: [UnsplashModel] = []
     private var readyViewFormModelsURL: [UIImageView] = []
     private let cache = NSCache<AnyObject, UIImageView>()
@@ -65,14 +65,14 @@ final class TableViewController: UITableViewController {
 }
 
 //MARK: numberOfRowsInSection
-extension TableViewController {
+extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         unsplashModels.count
     }
 }
 
 //MARK: cellForRowAt
-extension TableViewController {
+extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let modelSplh = unsplashModels[indexPath.row]
         tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
@@ -92,7 +92,7 @@ extension TableViewController {
 }
 
 //MARK: didSelectRowAt
-extension TableViewController {
+extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let DetailViewController = DetailViewController()
 
