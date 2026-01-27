@@ -47,7 +47,7 @@ class DetailViewController: UIViewController {
     }
     
     func setLayout() {
-        view.backgroundColor = .brown
+        view.backgroundColor = .darkGray
         view.addSubview(image)
         view.addSubview(titleImage)
         view.addSubview(buttonBack)

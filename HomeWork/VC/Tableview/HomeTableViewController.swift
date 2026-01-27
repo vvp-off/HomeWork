@@ -9,26 +9,29 @@ import UIKit
 
 final class HomeTableViewController: UITableViewController {
     private var unsplashModels: [UnsplashModel] = []
-    private var readyViewFormModelsURL: [UIImageView] = []
-    private let cache = NSCache<AnyObject, UIImageView>()
+    private var imageArray : [UIImage] = []
+    private let cache = NSCache<AnyObject, UIImage>()
+    private let spinner = UIActivityIndicatorView(style: .large)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configSpinner()
         configTableView()
         updata()
-        
-        DispatchSerialQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadImageForCell()
-            print("tableview reloadData after 2 sec")
-        }
-
-        DispatchSerialQueue.main.asyncAfter(deadline: .now() + 4) {
-            print("try reload TableView after 4 sec")
-            self.tableView.reloadData()
-        }
-
+        DispatchSerialQueue.main.asyncAfter(deadline: .now() + 2) { self.tableView.reloadData() }
     }
 
+    private func configSpinner() {
+        view.addSubview(spinner)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
     private func configTableView() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -40,26 +43,26 @@ final class HomeTableViewController: UITableViewController {
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.unsplashModels = modelsUnspl
+                self.getImageForCell()
             }
         }
     }
-
-    private func loadImageForCell() {
-        if !unsplashModels.isEmpty {
-            for image in unsplashModels {
-                let imageReady = UIImageView()
-                    imageReady.load(from: image.urls.regular!)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    if imageReady.image == nil {
-                        print("не загрузилось")
-                    } else {
-                        self.readyViewFormModelsURL.append(imageReady)
-                        print(imageReady.image ?? "нет")
+    
+    private func getImageForCell() {
+        for model in unsplashModels {
+            guard let url = URL(string: model.urls.regular!) else { return }
+            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
+                guard let data else { return }
+                let image = UIImage(data: data)
+                if image != nil {
+                    DispatchQueue.main.async {
+                        self.imageArray.append(image ?? UIImage(systemName: "swift")!)
+                        print("imageArray count:", self.imageArray.count)
                     }
                 }
+                else { print("nil") }
             }
-        } else {
-            print("pusto v unsplashModels")
+            task.resume()
         }
     }
 }
@@ -67,7 +70,7 @@ final class HomeTableViewController: UITableViewController {
 //MARK: numberOfRowsInSection
 extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        unsplashModels.count
+        imageArray.count
     }
 }
 
@@ -79,16 +82,18 @@ extension HomeTableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
         
         if let image = cache.object(forKey: indexPath.row as AnyObject) {
-            cell.imageCell.image = image.image
+            cell.imageCell.image = image
             cell.titleCell.text = modelSplh.alt_description
         }
         else {
-            cache.setObject(readyViewFormModelsURL[indexPath.row], forKey: indexPath.row as AnyObject)
-            cell.imageCell.image = readyViewFormModelsURL[indexPath.row].image
+            cache.setObject(imageArray[indexPath.row], forKey: indexPath.row as AnyObject)
+            cell.imageCell.image = imageArray[indexPath.row]
             cell.titleCell.text = modelSplh.alt_description
         }
+        self.spinner.stopAnimating()
         return cell
     }
+    
 }
 
 //MARK: didSelectRowAt
@@ -97,7 +102,7 @@ extension HomeTableViewController {
         let DetailViewController = DetailViewController()
 
         if let image = cache.object(forKey: indexPath.row as AnyObject) {
-            DetailViewController.image.image = image.image
+            DetailViewController.image.image = image
             DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
         }
         else {
@@ -107,8 +112,6 @@ extension HomeTableViewController {
         }
 
         DetailViewController.modalPresentationStyle = .fullScreen
-        present(DetailViewController, animated: true) {
-            tableView.backgroundColor = .blue
-        }
+        present(DetailViewController, animated: true)
    }
 }
