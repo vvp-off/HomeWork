@@ -12,13 +12,13 @@ final class HomeTableViewController: UITableViewController {
     private var imageArray : [UIImage] = []
     private let cache = NSCache<AnyObject, UIImage>()
     private let spinner = UIActivityIndicatorView(style: .large)
-
+        
     override func viewDidLoad() {
         super.viewDidLoad()
+        updata()
         configSpinner()
         configTableView()
-        updata()
-        DispatchSerialQueue.main.asyncAfter(deadline: .now() + 2) { self.tableView.reloadData() }
+        
     }
 
     private func configSpinner() {
@@ -35,6 +35,7 @@ final class HomeTableViewController: UITableViewController {
     private func configTableView() {
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
         tableView.rowHeight = 250
     }
 
@@ -49,18 +50,28 @@ final class HomeTableViewController: UITableViewController {
     }
     
     private func getImageForCell() {
+        let total = unsplashModels.count
         for model in unsplashModels {
-            guard let url = URL(string: model.urls.regular!) else { return }
+            guard
+                let urlString = model.urls.full,
+                let url = URL(string: urlString)
+            else { continue }
+            
             let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                guard let data else { return }
-                let image = UIImage(data: data)
-                if image != nil {
-                    DispatchQueue.main.async {
-                        self.imageArray.append(image ?? UIImage(systemName: "swift")!)
+                guard
+                    let data,
+                    let image = UIImage(data: data)
+                else { return }
+                
+                DispatchQueue.main.async {
+                        self.imageArray.append(image)
                         print("imageArray count:", self.imageArray.count)
+                    
+                    if self.imageArray.count == total {
+                        self.tableView.reloadData()
+                        self.spinner.stopAnimating()
                     }
                 }
-                else { print("nil") }
             }
             task.resume()
         }
@@ -78,7 +89,6 @@ extension HomeTableViewController {
 extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let modelSplh = unsplashModels[indexPath.row]
-        tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
         
         if let image = cache.object(forKey: indexPath.row as AnyObject) {
@@ -90,7 +100,7 @@ extension HomeTableViewController {
             cell.imageCell.image = imageArray[indexPath.row]
             cell.titleCell.text = modelSplh.alt_description
         }
-        self.spinner.stopAnimating()
+        
         return cell
     }
     
@@ -102,13 +112,13 @@ extension HomeTableViewController {
         let DetailViewController = DetailViewController()
 
         if let image = cache.object(forKey: indexPath.row as AnyObject) {
-            DetailViewController.image.image = image
+            DetailViewController.imageView.image = image
             DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
         }
         else {
-            print("nema u cache")
+            print("no cache")
             DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
-            DetailViewController.image.load(from: unsplashModels[indexPath.row].urls.full!)
+            DetailViewController.imageView.image = imageArray[indexPath.row]
         }
 
         DetailViewController.modalPresentationStyle = .fullScreen

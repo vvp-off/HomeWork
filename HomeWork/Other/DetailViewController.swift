@@ -34,7 +34,7 @@ class DetailViewController: UIViewController {
         return textview
     }()
     
-    lazy var image: UIImageView = {
+    lazy var imageView: UIImageView = {
         let img = UIImageView()
         img.image = UIImage(systemName: "swiftdata")
         img.contentMode = .scaleAspectFill
@@ -48,21 +48,21 @@ class DetailViewController: UIViewController {
     
     func setLayout() {
         view.backgroundColor = .darkGray
-        view.addSubview(image)
+        view.addSubview(imageView)
         view.addSubview(titleImage)
         view.addSubview(buttonBack)
         
-        image.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         titleImage.translatesAutoresizingMaskIntoConstraints = false
         buttonBack.frame = CGRect(x: 20, y: 60, width: 50, height: 30)
         
         NSLayoutConstraint.activate([
-            image.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
-            image.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            image.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            image.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60),
+            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60),
             
-            titleImage.leadingAnchor.constraint(equalTo: image.leadingAnchor),
+            titleImage.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
 //            titleImage.topAnchor.constraint(equalTo: image.bottomAnchor,constant: 10),
             titleImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
             titleImage.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60)
