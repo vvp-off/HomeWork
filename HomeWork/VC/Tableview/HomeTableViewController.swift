@@ -8,7 +8,32 @@
 import UIKit
 
 final class HomeTableViewController: UITableViewController {
+    
+    private var currentPage = 1
+    private var isLoadingList = false
+    
+    private let dashBreak: CGFloat = 300
+    
+    private func getNewDataFormAPI(_ numberPage: Int) {
+        updata()
+    }
+    
+    func loadMoreItemsForList(){
+        currentPage += 1
+        getNewDataFormAPI(currentPage)
+    }
+
+     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreak  && !isLoadingList{
+             print(scrollView.contentOffset.y)
+                self.isLoadingList = true
+                self.loadMoreItemsForList()
+            }
+        }
+
+    
     private var unsplashModels: [UnsplashModel] = []
+    private var temperModels: [UnsplashModel] = []
     private var imageArray : [UIImage] = []
     private let cache = NSCache<AnyObject, UIImage>()
     private let spinner = UIActivityIndicatorView(style: .large)
@@ -18,7 +43,6 @@ final class HomeTableViewController: UITableViewController {
         updata()
         configSpinner()
         configTableView()
-        
     }
 
     private func configSpinner() {
@@ -40,18 +64,20 @@ final class HomeTableViewController: UITableViewController {
     }
 
     private func updata() {
-        APIManager.shared.getImage { [weak self] modelsUnspl in
+        APIManager.shared.getImage(page: currentPage) { [weak self] modelsUnspl in
             DispatchQueue.main.async {
                 guard let self else { return }
-                self.unsplashModels = modelsUnspl
+                self.temperModels = modelsUnspl
                 self.getImageForCell()
             }
         }
     }
     
     private func getImageForCell() {
-        let total = unsplashModels.count
-        for model in unsplashModels {
+        unsplashModels.append(contentsOf: temperModels)
+        print("count temperModels: ", temperModels.count)
+//        let total = unsplashModels.count
+        for model in temperModels {
             guard
                 let urlString = model.urls.full,
                 let url = URL(string: urlString)
@@ -66,10 +92,12 @@ final class HomeTableViewController: UITableViewController {
                 DispatchQueue.main.async {
                         self.imageArray.append(image)
                         print("imageArray count:", self.imageArray.count)
+                    print(self.unsplashModels.count)
                     
-                    if self.imageArray.count == total {
+                    if self.imageArray.count == self.unsplashModels.count {
+                        self.isLoadingList = false
                         self.tableView.reloadData()
-                        self.spinner.stopAnimating()
+                        if self.spinner.isAnimating { self.spinner.stopAnimating() }
                     }
                 }
             }

@@ -13,13 +13,16 @@ class APIManager {
     let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
     let urlHost = "https://api.unsplash.com"
     
-    func getImage(completion: @escaping ([UnsplashModel]) -> Void){
+    func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
         var urlComponents = URLComponents(string: urlHost)
         urlComponents?.path = "/photos"
-        urlComponents?.queryItems = [URLQueryItem(name: "client_id", value: accessKey)]
+        urlComponents?.queryItems = [
+            URLQueryItem(name: "client_id", value: accessKey),
+            URLQueryItem(name: "page", value: String(page))
+        ]
         
         guard let urlRequest = urlComponents?.url else { return }
-        
+        print(urlRequest)
         let request = URLRequest(url: urlRequest)
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             guard error == nil else {
