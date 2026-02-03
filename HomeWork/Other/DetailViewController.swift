@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+final class DetailViewController: UIViewController {
     
     @objc func buttonBackTapped() {
         dismiss(animated: true, completion: nil)
@@ -46,7 +46,7 @@ class DetailViewController: UIViewController {
         setLayout()
     }
     
-    func setLayout() {
+    private func setLayout() {
         view.backgroundColor = .darkGray
         view.addSubview(imageView)
         view.addSubview(titleImage)

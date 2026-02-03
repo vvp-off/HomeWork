@@ -8,30 +8,31 @@
 import UIKit
 
 final class HomeTableViewController: UITableViewController {
-    private var currentPage = 1
-    private var isLoadingList = false
+    private var unsplashModels: [UnsplashModel] = []
+    
+    private let cache = NSCache<AnyObject, UIImage>()
+    
+    private let spinner = UIActivityIndicatorView(style: .large)
     
     private let dashBreakScroll: CGFloat = 300
     
-    private var unsplashModels: [UnsplashModel] = []
-    private var temperModels: [UnsplashModel] = []
-    private var imageArray : [UIImage] = []
-    private let cache = NSCache<AnyObject, UIImage>()
-    private let spinner = UIActivityIndicatorView(style: .large)
-        
+    private var currentPage = 1
+    private var isLoadingList = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         updata(for: currentPage)
         configSpinner()
         configTableView()
+        tableView.reloadData()
     }
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
-               self.isLoadingList = true
-               self.loadMoreItemsForList()
-           }
-       }
+//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
+//               self.isLoadingList = true
+//               self.loadMoreItemsForList()
+//           }
+//       }
     
     private func loadMoreItemsForList(){
         currentPage += 1
@@ -60,40 +61,10 @@ final class HomeTableViewController: UITableViewController {
         APIManager.shared.getImage(page: page) { [weak self] UnsplashModels in
             DispatchQueue.main.async {
                 guard let self else { return }
-                self.temperModels = UnsplashModels
-                self.getImageForCell()
+                self.unsplashModels = UnsplashModels
+                self.spinner.isHidden = true
+                self.tableView.reloadData()
             }
-        }
-    }
-    
-    private func getImageForCell() {
-        unsplashModels.append(contentsOf: temperModels)
-        print("count temperModels: ", temperModels.count)
-        for model in temperModels {
-            guard
-                let urlString = model.urls.full,
-                let url = URL(string: urlString)
-            else { continue }
-            
-            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                guard
-                    let data,
-                    let image = UIImage(data: data)
-                else { return }
-                
-                DispatchQueue.main.async {
-                        self.imageArray.append(image)
-                        print("imageArray count:", self.imageArray.count)
-                    print(self.unsplashModels.count)
-                    
-                    if self.imageArray.count == self.unsplashModels.count {
-                        self.isLoadingList = false
-                        self.tableView.reloadData()
-                        if self.spinner.isAnimating { self.spinner.stopAnimating() }
-                    }
-                }
-            }
-            task.resume()
         }
     }
 }
@@ -101,24 +72,47 @@ final class HomeTableViewController: UITableViewController {
 //MARK: numberOfRowsInSection
 extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        imageArray.count
+        unsplashModels.count
     }
 }
 
 //MARK: cellForRowAt
 extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let modelSplh = unsplashModels[indexPath.row]
+        let modelUnsplash = unsplashModels[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
         
+        guard
+            let urlString = modelUnsplash.urls.full,
+            let url = URL(string: urlString)
+        else { return cell }
+        
+        DispatchQueue.main.async {
+            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
+                guard
+                    let data,
+                    let image = UIImage(data: data)
+                else { return }
+                
+                cell.imageCell.image = image
+                tableView.reloadData()
+            }
+            task.resume()
+        }
         if let image = cache.object(forKey: indexPath.row as AnyObject) {
             cell.imageCell.image = image
-            cell.titleCell.text = modelSplh.alt_description
+            cell.titleCell.text = modelUnsplash.alt_description
         }
         else {
-            cache.setObject(imageArray[indexPath.row], forKey: indexPath.row as AnyObject)
-            cell.imageCell.image = imageArray[indexPath.row]
-            cell.titleCell.text = modelSplh.alt_description
+            
+            let image = UIImageView()
+            image.load(from: modelUnsplash.urls.full!)
+            while image.image == nil {
+                cell.imageCell.image = UIImage(named: "swift")
+            }
+            cache.setObject(image.image!, forKey: indexPath.row as AnyObject)
+            cell.imageCell.image = image.image
+            cell.titleCell.text = modelUnsplash.alt_description
         }
         
         return cell
@@ -138,7 +132,9 @@ extension HomeTableViewController {
         else {
             print("no cache")
             DetailViewController.titleImage.text = unsplashModels[indexPath.row].alt_description
-            DetailViewController.imageView.image = imageArray[indexPath.row]
+            let image = UIImageView()
+            image.load(from: unsplashModels[indexPath.row].urls.full!)
+            DetailViewController.imageView.image = image.image
         }
 
         DetailViewController.modalPresentationStyle = .fullScreen

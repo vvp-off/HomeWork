@@ -11,7 +11,7 @@ final class CellCustom: UITableViewCell {
     
     static let identifier = "CellCustom"
    
-    var imageCell: UIImageView = {
+     var imageCell: UIImageView = {
         UIImageView()
     }()
     
@@ -35,7 +35,7 @@ final class CellCustom: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setConstraint() {
+    private func setConstraint() {
         contentView.addSubview(imageCell)
         contentView.addSubview(titleCell)
         

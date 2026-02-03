@@ -7,13 +7,13 @@
 
 import Foundation
 
-class APIManager {
+final class APIManager {
     static let shared = APIManager()
     
-    let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
-    let urlHost = "https://api.unsplash.com"
+    private let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
+    private let urlHost = "https://api.unsplash.com"
     
-    func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
+     func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
         var urlComponents = URLComponents(string: urlHost)
         urlComponents?.path = "/photos"
         urlComponents?.queryItems = [
