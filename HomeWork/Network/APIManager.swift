@@ -23,19 +23,16 @@ class APIManager {
         
         guard let urlRequest = urlComponents?.url else { return }
         print(urlRequest)
+        
         let request = URLRequest(url: urlRequest)
+        
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
+            guard error == nil else { return }
             guard let dataPrint = data else { return }
             
             do {
                 let result = try JSONDecoder().decode([UnsplashModel].self, from: dataPrint)
-                var models: [UnsplashModel] = []
-                for model in result { models.append(model) }
-                completion(models)
+                completion(result)
             }
             catch { print(error.localizedDescription) }
         }

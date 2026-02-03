@@ -8,29 +8,10 @@
 import UIKit
 
 final class HomeTableViewController: UITableViewController {
-    
     private var currentPage = 1
     private var isLoadingList = false
     
-    private let dashBreak: CGFloat = 300
-    
-    private func getNewDataFormAPI(_ numberPage: Int) {
-        updata()
-    }
-    
-    func loadMoreItemsForList(){
-        currentPage += 1
-        getNewDataFormAPI(currentPage)
-    }
-
-     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreak  && !isLoadingList{
-             print(scrollView.contentOffset.y)
-                self.isLoadingList = true
-                self.loadMoreItemsForList()
-            }
-        }
-
+    private let dashBreakScroll: CGFloat = 300
     
     private var unsplashModels: [UnsplashModel] = []
     private var temperModels: [UnsplashModel] = []
@@ -40,9 +21,21 @@ final class HomeTableViewController: UITableViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        updata()
+        updata(for: currentPage)
         configSpinner()
         configTableView()
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
+               self.isLoadingList = true
+               self.loadMoreItemsForList()
+           }
+       }
+    
+    private func loadMoreItemsForList(){
+        currentPage += 1
+        updata(for: currentPage)
     }
 
     private func configSpinner() {
@@ -63,11 +56,11 @@ final class HomeTableViewController: UITableViewController {
         tableView.rowHeight = 250
     }
 
-    private func updata() {
-        APIManager.shared.getImage(page: currentPage) { [weak self] modelsUnspl in
+    private func updata(for page: Int) {
+        APIManager.shared.getImage(page: page) { [weak self] UnsplashModels in
             DispatchQueue.main.async {
                 guard let self else { return }
-                self.temperModels = modelsUnspl
+                self.temperModels = UnsplashModels
                 self.getImageForCell()
             }
         }
@@ -76,7 +69,6 @@ final class HomeTableViewController: UITableViewController {
     private func getImageForCell() {
         unsplashModels.append(contentsOf: temperModels)
         print("count temperModels: ", temperModels.count)
-//        let total = unsplashModels.count
         for model in temperModels {
             guard
                 let urlString = model.urls.full,
