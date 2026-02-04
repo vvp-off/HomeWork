@@ -12,6 +12,7 @@ struct UnsplashModel: Decodable {
     let slug: String?
     let urls: Urls
     let alt_description: String?
+    let blur_hash : String?
 }
 
 struct Urls: Decodable {
