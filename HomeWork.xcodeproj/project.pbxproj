@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F475B6A32F33D7FA003A4381 /* BlurHash in Frameworks */ = {isa = PBXBuildFile; productRef = F475B6A22F33D7FA003A4381 /* BlurHash */; };
+		F475B6A52F33D7FA003A4381 /* BlurHashKit in Frameworks */ = {isa = PBXBuildFile; productRef = F475B6A42F33D7FA003A4381 /* BlurHashKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		F4E527022F191EA400CD6D8D /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HomeWork.app; path = "/Users/vp/Xcode Pojects/HomeWork/build/Debug-iphoneos/HomeWork.app"; sourceTree = "<absolute>"; };
+		F4C75D1B2F333AD100A2F75E /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeWork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F475B6A52F33D7FA003A4381 /* BlurHashKit in Frameworks */,
+				F475B6A32F33D7FA003A4381 /* BlurHash in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				F4C33E112E9EC2B9002008F1 /* HomeWork */,
+				F4C75D1B2F333AD100A2F75E /* HomeWork.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -69,9 +77,11 @@
 			);
 			name = HomeWork;
 			packageProductDependencies = (
+				F475B6A22F33D7FA003A4381 /* BlurHash */,
+				F475B6A42F33D7FA003A4381 /* BlurHashKit */,
 			);
 			productName = HomeWork;
-			productReference = F4E527022F191EA400CD6D8D /* HomeWork.app */;
+			productReference = F4C75D1B2F333AD100A2F75E /* HomeWork.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -98,6 +108,9 @@
 			);
 			mainGroup = F4C33E062E9EC2B9002008F1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F475B6A12F33D7FA003A4381 /* XCRemoteSwiftPackageReference "BlurHash" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F4C33E062E9EC2B9002008F1;
 			projectDirPath = "";
@@ -334,6 +347,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F475B6A12F33D7FA003A4381 /* XCRemoteSwiftPackageReference "BlurHash" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/niochat/BlurHash";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F475B6A22F33D7FA003A4381 /* BlurHash */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F475B6A12F33D7FA003A4381 /* XCRemoteSwiftPackageReference "BlurHash" */;
+			productName = BlurHash;
+		};
+		F475B6A42F33D7FA003A4381 /* BlurHashKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F475B6A12F33D7FA003A4381 /* XCRemoteSwiftPackageReference "BlurHash" */;
+			productName = BlurHashKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F4C33E072E9EC2B9002008F1 /* Project object */;
 }

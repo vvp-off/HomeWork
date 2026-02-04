@@ -4,7 +4,7 @@
 //
 //  Created by VP on 14.10.2025.
 //
-
+import BlurHash
 import UIKit
 
 final class HomeTableViewController: UITableViewController {
@@ -88,6 +88,8 @@ extension HomeTableViewController {
             cell.titleCell.text = modelUnsplash.alt_description
         }
         else {
+            let blurPlaceHolder = UIImage(blurHash: modelUnsplash.blur_hash!, size: CGSize(width: 35, height: 35))
+            cell.imageCell.image = blurPlaceHolder
             guard
                 let urlString = modelUnsplash.urls.full,
                 let url = URL(string: urlString)

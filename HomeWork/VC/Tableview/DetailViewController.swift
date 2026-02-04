@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import BlurHash
 
 final class DetailViewController: UIViewController {
     
@@ -57,6 +58,9 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
+        
+        let image = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 35, height: 35))
+        view.backgroundColor = UIColor(patternImage: image!)
     }
     
     private func setLayout() {

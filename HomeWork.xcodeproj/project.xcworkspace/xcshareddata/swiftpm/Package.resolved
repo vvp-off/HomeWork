@@ -1,0 +1,15 @@
+{
+  "originHash" : "b9d92ba953f333d4b54513de9e4ed453e0a6bb3bcb32f3f2ae36fa474dbbbcbe",
+  "pins" : [
+    {
+      "identity" : "blurhash",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/niochat/BlurHash",
+      "state" : {
+        "revision" : "1c54f004fa1314ebcf678fad33381afb449a79b9",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
