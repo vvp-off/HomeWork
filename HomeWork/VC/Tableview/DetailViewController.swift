@@ -10,7 +10,6 @@ import BlurHash
 
 final class DetailViewController: UIViewController {
     
-    let cache: NSCache<AnyObject, UIImage>
     let model: UnsplashModel
     
     @objc func buttonBackTapped() {
@@ -26,7 +25,7 @@ final class DetailViewController: UIViewController {
         button.layer.cornerRadius = 10
         return button
     }()
-
+    
     lazy var titleImage: UILabel = {
         let textview = UILabel()
         textview.text = model.alt_description ?? "The Swift Programming Language 🫀😈"
@@ -40,14 +39,14 @@ final class DetailViewController: UIViewController {
     
     lazy var imageView: UIImageView = {
         let img = UIImageView()
-        img.image = cache.object(forKey: model.urls.full as AnyObject) ?? UIImage(systemName: "swiftdata")
+        img.image = CacheService.shared
+            .getObject(forKey: model.urls.full as AnyObject) ?? UIImage(systemName: "swiftdata")
         img.contentMode = .scaleAspectFill
         return img
     }()
     
-    init (model: UnsplashModel, cache: NSCache<AnyObject, UIImage>) {
+    init (model: UnsplashModel) {
         self.model = model
-        self.cache = cache
         super.init(nibName: nil, bundle: nil)
     }
     

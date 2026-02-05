@@ -36,6 +36,12 @@ final class CellCustom: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageCell.image = UIImage(systemName: "swift")
+        titleCell.text = "Hello"
+    }
+    
     private func setConstraint() {
         contentView.addSubview(imageCell)
         contentView.addSubview(titleCell)
