@@ -11,6 +11,7 @@ import BlurHash
 final class DetailViewController: UIViewController {
     
     let model: UnsplashModel
+    lazy var url = model.urls.small
     
     @objc func buttonBackTapped() {
         dismiss(animated: true, completion: nil)
@@ -39,8 +40,7 @@ final class DetailViewController: UIViewController {
     
     lazy var imageView: UIImageView = {
         let img = UIImageView()
-        img.image = CacheService.shared
-            .getObject(forKey: model.urls.full as AnyObject) ?? UIImage(systemName: "swiftdata")
+        img.image = CacheService.shared.getObject(forKey: url as AnyObject) ?? UIImage(systemName: "swiftdata")
         img.contentMode = .scaleAspectFill
         return img
     }()
@@ -57,9 +57,9 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
-        
-        let image = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 35, height: 35))
-        view.backgroundColor = UIColor(patternImage: image!)
+        view.backgroundColor = .gray
+//        let image = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 35, height: 35))
+//        view.backgroundColor = UIColor(patternImage: image!)
     }
     
     private func setLayout() {

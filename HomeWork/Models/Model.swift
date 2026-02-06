@@ -18,4 +18,5 @@ struct UnsplashModel: Decodable {
 struct Urls: Decodable {
     let regular: String?
     let full: String?
+    let small: String?
 }

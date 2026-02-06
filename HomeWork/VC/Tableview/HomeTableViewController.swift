@@ -10,9 +10,7 @@ import UIKit
 final class HomeTableViewController: UITableViewController {
     private var unsplashModels: [UnsplashModel] = []
     
-    
-    private let dashBreakScroll: CGFloat = 300
-    
+    private let dashBreakScroll: CGFloat = 500
     private var currentPage = 1
     private var isLoadingList = false
     
@@ -45,10 +43,15 @@ final class HomeTableViewController: UITableViewController {
         APIManager.shared.getImage(page: page) { [weak self] UnsplashModels in
             DispatchQueue.main.async {
                 guard let self else { return }
+                let startIndex = self.unsplashModels.count
+                
                 self.unsplashModels.append(contentsOf: UnsplashModels)
                 self.isLoadingList = false
-                print(self.isLoadingList)
-                self.tableView.reloadData()
+                
+                let newIndexPaths = (startIndex..<self.unsplashModels.count).map {
+                    IndexPath(row: $0, section: 0)
+                }
+                self.tableView.insertRows(at: newIndexPaths, with: .fade)
             }
         }
     }
@@ -66,17 +69,15 @@ extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
         let modelUnsplash = unsplashModels[indexPath.row]
-        let imageUrl = modelUnsplash.urls.full
-        cell.imageCell.image = UIImage(
-            blurHash: modelUnsplash.blur_hash!s,
-            size: CGSize(width: 150, height: 200),
-        )
+        let imageUrl = modelUnsplash.urls.small
+        cell.imageCell.image = nil
+        cell.titleCell.text = nil
+        cell.imageCell.image = UIImage(blurHash: modelUnsplash.blur_hash!, size: CGSize(width: 150, height: 200))
         cell.titleCell.text = modelUnsplash.alt_description
 
         
         if let image = CacheService.shared.getObject(forKey: imageUrl as AnyObject) {
             cell.imageCell.image = image
-            
         }
         else {
             LoadImage.shared.getImage(from: imageUrl) { image in
@@ -98,5 +99,6 @@ extension HomeTableViewController {
         let DetailViewController = DetailViewController(model: unsplashModels[indexPath.row])
         DetailViewController.modalPresentationStyle = .fullScreen
         present(DetailViewController, animated: true)
+        print("Tap - Tap")
     }
 }
