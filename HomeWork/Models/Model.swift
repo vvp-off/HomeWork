@@ -13,10 +13,20 @@ struct UnsplashModel: Decodable {
     let urls: Urls
     let alt_description: String?
     let blur_hash : String?
+    let user: User
 }
 
 struct Urls: Decodable {
     let regular: String?
     let full: String?
     let small: String?
+}
+
+struct User: Decodable {
+    let links: Links?
+    let name: String?
+}
+
+struct Links: Decodable {
+    let html: String?
 }

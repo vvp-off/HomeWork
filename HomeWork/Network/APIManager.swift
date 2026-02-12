@@ -13,7 +13,7 @@ final class APIManager {
     private let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
     private let urlHost = "https://api.unsplash.com"
     
-     func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
+    func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
         var urlComponents = URLComponents(string: urlHost)
         urlComponents?.path = "/photos"
         urlComponents?.queryItems = [
@@ -22,16 +22,13 @@ final class APIManager {
         ]
         
         guard let urlRequest = urlComponents?.url else { return }
-        print(urlRequest)
-        
         let request = URLRequest(url: urlRequest)
         
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             guard error == nil else { return }
-            guard let dataPrint = data else { return }
-            
+            guard let data else { return }
             do {
-                let result = try JSONDecoder().decode([UnsplashModel].self, from: dataPrint)
+                let result = try JSONDecoder().decode([UnsplashModel].self, from: data)
                 completion(result)
             }
             catch { print(error.localizedDescription) }

@@ -4,6 +4,7 @@
 //
 //  Created by VP on 14.10.2025.
 //
+
 import BlurHash
 import UIKit
 
@@ -22,8 +23,8 @@ final class HomeTableViewController: UITableViewController {
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
-            self.isLoadingList = true
             self.loadMoreItemsForList()
+            self.isLoadingList = true
         }
     }
     
@@ -40,12 +41,12 @@ final class HomeTableViewController: UITableViewController {
     }
     
     private func updata(for page: Int) {
-        APIManager.shared.getImage(page: page) { [weak self] UnsplashModels in
+        APIManager.shared.getImage(page: page) { [weak self] newUnsplashModels in
             DispatchQueue.main.async {
                 guard let self else { return }
                 let startIndex = self.unsplashModels.count
                 
-                self.unsplashModels.append(contentsOf: UnsplashModels)
+                self.unsplashModels.append(contentsOf: newUnsplashModels)
                 self.isLoadingList = false
                 
                 let newIndexPaths = (startIndex..<self.unsplashModels.count).map {
@@ -70,12 +71,12 @@ extension HomeTableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellCustom.identifier, for: indexPath) as! CellCustom
         let modelUnsplash = unsplashModels[indexPath.row]
         let imageUrl = modelUnsplash.urls.small
+        
         cell.imageCell.image = nil
         cell.titleCell.text = nil
         cell.imageCell.image = UIImage(blurHash: modelUnsplash.blur_hash!, size: CGSize(width: 150, height: 200))
         cell.titleCell.text = modelUnsplash.alt_description
 
-        
         if let image = CacheService.shared.getObject(forKey: imageUrl as AnyObject) {
             cell.imageCell.image = image
         }
@@ -90,7 +91,6 @@ extension HomeTableViewController {
         }
         return cell
     }
-    
 }
 
 //MARK: didSelectRowAt
@@ -99,6 +99,5 @@ extension HomeTableViewController {
         let DetailViewController = DetailViewController(model: unsplashModels[indexPath.row])
         DetailViewController.modalPresentationStyle = .fullScreen
         present(DetailViewController, animated: true)
-        print("Tap - Tap")
     }
 }
