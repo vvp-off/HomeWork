@@ -71,8 +71,13 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
-        //        let image = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 35, height: 35))
-        //        view.backgroundColor = UIColor(patternImage: image!)
+//                let image = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 350, height: 350))
+//                view.backgroundColor = UIColor(patternImage: image!)
+        self.view.layer.contents = UIImage(
+            blurHash: model.blur_hash!,
+            size: CGSize(width: 35, height: 35)
+        )?.cgImage
+        self.view.layer.contentsGravity = .resizeAspectFill
     }
     
     
@@ -86,7 +91,7 @@ final class DetailViewController: UIViewController {
     @objc private func backTaped() { dismiss(animated: true) }
     
     private func setLayout() {
-        view.backgroundColor = .darkGray
+//        view.backgroundColor = .darkGray
         view.addSubview(imageView)
         view.addSubview(titleForImage)
         view.addSubview(buttonBack)

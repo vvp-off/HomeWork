@@ -14,17 +14,28 @@ final class HomeTableViewController: UITableViewController {
     private let dashBreakScroll: CGFloat = 500
     private var currentPage = 1
     private var isLoadingList = false
+    private let refresh = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         updata(for: currentPage)
         configTableView()
+        
+        refreshControl = refresh
+        
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
             self.loadMoreItemsForList()
             self.isLoadingList = true
+        }
+        
+        if refresh.isRefreshing == true {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2)  {
+                self.refresh.endRefreshing()
+                print("end refresh")
+            }
         }
     }
     
