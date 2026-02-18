@@ -8,11 +8,12 @@
 import UIKit
 
 final class CellCustom: UITableViewCell {
-    
     static let identifier = "CellCustom"
-   
+    
     var imageCell: UIImageView = {
-        UIImageView()
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "swift")
+        return imageView
     }()
     
     var titleCell: UILabel = {
@@ -26,7 +27,7 @@ final class CellCustom: UITableViewCell {
         label.backgroundColor = .white.withAlphaComponent(0.4)
         return label
     }()
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setConstraint()
@@ -35,7 +36,13 @@ final class CellCustom: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setConstraint() {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageCell.image = UIImage(systemName: "swift")
+        titleCell.text = "Hello"
+    }
+    
+    private func setConstraint() {
         contentView.addSubview(imageCell)
         contentView.addSubview(titleCell)
         
@@ -47,10 +54,10 @@ final class CellCustom: UITableViewCell {
             imageCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                
+            
             titleCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
             titleCell.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
             titleCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
-            ])
+        ])
     }
 }

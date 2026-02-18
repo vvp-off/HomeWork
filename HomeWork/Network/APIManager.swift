@@ -7,32 +7,29 @@
 
 import Foundation
 
-class APIManager {
+final class APIManager {
     static let shared = APIManager()
     
-    let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
-    let urlHost = "https://api.unsplash.com"
+    private let accessKey = "fijP4H6CNj5A_D-KxUwaeJAstoMQs8rRuxM1zTS5VSI"
+    private let urlHost = "https://api.unsplash.com"
     
-    func getImage(completion: @escaping ([UnsplashModel]) -> Void){
+    func getImage(page: Int = 1, completion: @escaping ([UnsplashModel]) -> Void){
         var urlComponents = URLComponents(string: urlHost)
         urlComponents?.path = "/photos"
-        urlComponents?.queryItems = [URLQueryItem(name: "client_id", value: accessKey)]
+        urlComponents?.queryItems = [
+            URLQueryItem(name: "client_id", value: accessKey),
+            URLQueryItem(name: "page", value: String(page))
+        ]
         
         guard let urlRequest = urlComponents?.url else { return }
-        
         let request = URLRequest(url: urlRequest)
+        
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
-            guard let dataPrint = data else { return }
-            
+            guard error == nil else { return }
+            guard let data else { return }
             do {
-                let result = try JSONDecoder().decode([UnsplashModel].self, from: dataPrint)
-                var models: [UnsplashModel] = []
-                for model in result { models.append(model) }
-                completion(models)
+                let result = try JSONDecoder().decode([UnsplashModel].self, from: data)
+                completion(result)
             }
             catch { print(error.localizedDescription) }
         }
