@@ -31,7 +31,7 @@ final class APIManager {
                 let result = try JSONDecoder().decode([UnsplashModel].self, from: data)
                 completion(result)
             }
-            catch { print(error.localizedDescription) }
+            catch { print(error.localizedDescription) ; print ("error decode for \(page) page") }
         }
         task.resume()
     }
