@@ -5,8 +5,8 @@
 //  Created by VP on 14.10.2025.
 //
 
-import BlurHash
 import UIKit
+import BlurHash
 
 final class HomeTableViewController: UITableViewController {
     private var unsplashModels: [UnsplashModel] = []
@@ -15,33 +15,73 @@ final class HomeTableViewController: UITableViewController {
     private var currentPage = 12
     private var isLoadingList = false
     private let refresh = UIRefreshControl()
-    private let viewFooter = UIImageView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    
+    private let footerLoader: UIStackView = {
+        let stack = UIStackView()
+        
+        let label: UILabel = {
+            let lab = UILabel()
+            lab.text = "Loading..."
+            return lab
+        }()
+        
+        let spiner: UIActivityIndicatorView = {
+            let spiner = UIActivityIndicatorView()
+            spiner.color = .gray
+            spiner.startAnimating()
+            return spiner
+        }()
+        
+        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(spiner)
+        stack.axis = .horizontal
+        stack.spacing = 20
+        stack.alignment = .center
+        stack.distribution = .fill
+        return stack
+    }()
     
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         update(for: currentPage)
         configTableView()
         configureRefreshControl()
-        viewFooter.image = UIImage(named: "AppIcon")
     }
     
-// MARK: - UIScrollViewDelegate
+    // MARK: - UIScrollViewDelegate
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
             self.loadMoreItemsForList()
             self.isLoadingList = true
+            
+            let footerHeight: CGFloat = 80
+            let containerForFooter = UIView(frame: .init(x: 0, y: 0, width: tableView.bounds.width, height: footerHeight))
+            containerForFooter.addSubview(footerLoader)
+            
+            footerLoader.translatesAutoresizingMaskIntoConstraints = false
+            footerLoader.frame.size.width = tableView.bounds.width
+            footerLoader.frame.size.height = 80
+            
+            NSLayoutConstraint.activate([
+                footerLoader.centerXAnchor.constraint(equalTo: containerForFooter.centerXAnchor),
+                footerLoader.centerYAnchor.constraint(equalTo: containerForFooter.centerYAnchor)
+            ])
+
+            tableView.tableFooterView = containerForFooter
         }
     }
     
-// MARK: - Private Methods
- 
+    // MARK: - Private Methods
+    
     private func loadMoreItemsForList(){
         currentPage += 1
-        update(for: currentPage)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.update(for: self.currentPage) { self.tableView.tableFooterView = nil }
+        }
     }
     
     private func configTableView() {
@@ -50,10 +90,11 @@ final class HomeTableViewController: UITableViewController {
         tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
         tableView.rowHeight = 250
         tableView.refreshControl = refresh
+        tableView.separatorColor = .darkGray
+        tableView.separatorStyle = .none
     }
     
     private func configureRefreshControl() {
-        print(self)
         refresh.addTarget(self, action: #selector(sortedTable), for: .valueChanged)
         refresh.tintColor = .blue
         refresh.attributedTitle = NSAttributedString(string: ("Loading..."))
@@ -85,7 +126,6 @@ final class HomeTableViewController: UITableViewController {
         }
     }
 }
-
 // MARK: - NumberOfRowsInSection
 
 extension HomeTableViewController {
@@ -102,9 +142,13 @@ extension HomeTableViewController {
         let modelUnsplash = unsplashModels[indexPath.row]
         let imageUrl = modelUnsplash.urls.small
         
-        cell.imageCell.image = UIImage(blurHash: modelUnsplash.blur_hash!, size: CGSize(width: 150, height: 200))
+        if let blur = modelUnsplash.blur_hash {
+            cell.imageCell.image = UIImage(blurHash: blur, size: CGSize(width: 150, height: 200))
+        }
+        else {cell.imageCell.image = UIImage(systemName: "swift") }
+        
         cell.titleCell.text = modelUnsplash.alt_description
-
+        
         if let image = CacheService.shared.getObject(forKey: imageUrl as AnyObject) {
             cell.imageCell.image = image
         }
@@ -130,3 +174,4 @@ extension HomeTableViewController {
         present(detailVC, animated: true)
     }
 }
+
