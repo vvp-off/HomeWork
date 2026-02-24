@@ -12,7 +12,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F4C75D1B2F333AD100A2F75E /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HomeWork.app; path = "/Users/vp/Xcode Pojects/HomeWork/build/Debug-iphoneos/HomeWork.app"; sourceTree = "<absolute>"; };
+		F4BD07312F4DAD3D00C136C2 /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeWork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -53,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				F4C33E112E9EC2B9002008F1 /* HomeWork */,
+				F4BD07312F4DAD3D00C136C2 /* HomeWork.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,7 +81,7 @@
 				F475B6A42F33D7FA003A4381 /* BlurHashKit */,
 			);
 			productName = HomeWork;
-			productReference = F4C75D1B2F333AD100A2F75E /* HomeWork.app */;
+			productReference = F4BD07312F4DAD3D00C136C2 /* HomeWork.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

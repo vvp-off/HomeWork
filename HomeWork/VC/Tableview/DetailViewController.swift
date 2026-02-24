@@ -52,6 +52,15 @@ final class DetailViewController: UIViewController {
         return textview
     }()
     
+    private lazy var like: UIButton = {
+        let like = UIButton()
+        like.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        like.setImage(UIImage(systemName: "heart"), for: .selected)
+        like.tintColor = .red
+        like.addTarget(self, action: #selector(likeTaped), for: .touchUpInside)
+        return like
+    }()
+    
     private lazy var imageView: UIImageView = {
         let img = UIImageView()
         img.image = CacheService.shared.getObject(forKey: url as AnyObject) ?? UIImage(systemName: "swiftdata")
@@ -85,16 +94,22 @@ final class DetailViewController: UIViewController {
     
     @objc private func backTaped() { dismiss(animated: true) }
     
+    @objc private func likeTaped() {
+        like.isSelected.toggle()
+    }
+    
     private func setLayout() {
         view.addSubview(imageView)
         view.addSubview(titleForImage)
         view.addSubview(buttonBack)
         view.addSubview(titleAuthor)
+        view.addSubview(like)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         titleForImage.translatesAutoresizingMaskIntoConstraints = false
         titleAuthor.translatesAutoresizingMaskIntoConstraints = false
         buttonBack.translatesAutoresizingMaskIntoConstraints = false
+        like.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
@@ -112,9 +127,17 @@ final class DetailViewController: UIViewController {
             titleAuthor.centerYAnchor.constraint(equalTo: buttonBack.centerYAnchor),
             titleAuthor.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
             
+            like.centerYAnchor.constraint(equalTo: titleAuthor.centerYAnchor),
+            like.trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: -10),
+            
             titleForImage.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
             titleForImage.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
             titleForImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5)
         ])
     }
 }
+
+//#Preview{
+//    DetailViewController(model: mock)
+//}
+

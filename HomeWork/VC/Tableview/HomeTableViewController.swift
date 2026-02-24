@@ -9,7 +9,7 @@ import UIKit
 import BlurHash
 
 final class HomeTableViewController: UITableViewController {
-    private var unsplashModels: [UnsplashModel] = []
+    var unsplashModels: [UnsplashModel] = []
     
     private let dashBreakScroll: CGFloat = 500
     private var currentPage = 12
@@ -79,9 +79,9 @@ final class HomeTableViewController: UITableViewController {
     
     private func loadMoreItemsForList(){
         currentPage += 1
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+
             self.update(for: self.currentPage) { self.tableView.tableFooterView = nil }
-        }
+        
     }
     
     private func configTableView() {
@@ -90,8 +90,8 @@ final class HomeTableViewController: UITableViewController {
         tableView.register(CellCustom.self, forCellReuseIdentifier: CellCustom.identifier)
         tableView.rowHeight = 250
         tableView.refreshControl = refresh
-        tableView.separatorColor = .darkGray
-        tableView.separatorStyle = .none
+        tableView.separatorColor = .lightGray
+        tableView.separatorStyle = .singleLine
     }
     
     private func configureRefreshControl() {
@@ -175,3 +175,6 @@ extension HomeTableViewController {
     }
 }
 
+
+// MARK: - Previews
+//#Preview { HomeTableViewController() }

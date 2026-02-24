@@ -13,6 +13,7 @@ final class CellCustom: UITableViewCell {
     var imageCell: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "swift")
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
