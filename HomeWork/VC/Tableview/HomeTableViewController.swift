@@ -12,35 +12,10 @@ final class HomeTableViewController: UITableViewController {
     var unsplashModels: [UnsplashModel] = []
     
     private let dashBreakScroll: CGFloat = 500
-    private var currentPage = 12
+    private var currentPage = 1
     private var isLoadingList = false
     private let refresh = UIRefreshControl()
-    
-    private let footerLoader: UIStackView = {
-        let stack = UIStackView()
-        
-        let label: UILabel = {
-            let lab = UILabel()
-            lab.text = "Loading..."
-            return lab
-        }()
-        
-        let spiner: UIActivityIndicatorView = {
-            let spiner = UIActivityIndicatorView()
-            spiner.color = .gray
-            spiner.startAnimating()
-            return spiner
-        }()
-        
-        stack.addArrangedSubview(label)
-        stack.addArrangedSubview(spiner)
-        stack.axis = .horizontal
-        stack.spacing = 20
-        stack.alignment = .center
-        stack.distribution = .fill
-        return stack
-    }()
-    
+    private lazy var footerLoader = createFooter()
     
     // MARK: - Lifecycle
     
@@ -70,7 +45,7 @@ final class HomeTableViewController: UITableViewController {
                 footerLoader.centerXAnchor.constraint(equalTo: containerForFooter.centerXAnchor),
                 footerLoader.centerYAnchor.constraint(equalTo: containerForFooter.centerYAnchor)
             ])
-
+            
             tableView.tableFooterView = containerForFooter
         }
     }
@@ -79,9 +54,7 @@ final class HomeTableViewController: UITableViewController {
     
     private func loadMoreItemsForList(){
         currentPage += 1
-
-            self.update(for: self.currentPage) { self.tableView.tableFooterView = nil }
-        
+        self.update(for: self.currentPage) { self.tableView.tableFooterView = nil }
     }
     
     private func configTableView() {
@@ -108,6 +81,31 @@ final class HomeTableViewController: UITableViewController {
         update(for: currentPage) { self.refresh.endRefreshing() }
     }
     
+    private func createFooter() -> UIStackView {
+        let stack = UIStackView()
+        
+        let label: UILabel = {
+            let lab = UILabel()
+            lab.text = "Loading..."
+            return lab
+        }()
+        
+        let spiner: UIActivityIndicatorView = {
+            let spiner = UIActivityIndicatorView()
+            spiner.color = .gray
+            spiner.startAnimating()
+            return spiner
+        }()
+        
+        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(spiner)
+        stack.axis = .horizontal
+        stack.spacing = 20
+        stack.alignment = .center
+        stack.distribution = .fill
+        return stack
+    }
+    
     private func update(for page: Int, completion: (() -> Void)? = nil) {
         APIManager.shared.getImage(page: page) { [weak self] newUnsplashModels in
             DispatchQueue.main.async {
@@ -126,6 +124,11 @@ final class HomeTableViewController: UITableViewController {
         }
     }
 }
+
+
+
+
+
 // MARK: - NumberOfRowsInSection
 
 extension HomeTableViewController {
@@ -178,3 +181,6 @@ extension HomeTableViewController {
 
 // MARK: - Previews
 //#Preview { HomeTableViewController() }
+
+
+//"test"
