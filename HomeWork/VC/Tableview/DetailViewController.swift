@@ -10,33 +10,22 @@ import UIKit
 
 final class DetailViewController: UIViewController {
     private let model: UnsplashModel
+    
     private lazy var urlForCache = model.urls.small
     private lazy var urlForImageFullScreen = model.urls.full
-    private lazy var urlProfile = model.user.links?.html
-    
-    private lazy var buttonBack: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Exit", for: .normal)
-        button.addTarget(self, action: #selector(backTaped), for: .touchUpInside)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .lightGray
-        button.layer.cornerRadius = 10
-        return button
-    }()
+    private lazy var urlForProfile = model.user.links?.html
 
     private lazy var titleAuthor: UILabel = {
         let tapLabel = UITapGestureRecognizer(target: self, action: #selector(tappedLabel))
         let label = UILabel()
-        label.layer.cornerRadius = 5
-        label.layer.masksToBounds = true
         label.text = model.user.name?.localizedUppercase
         label.textColor = .orange
-        label.backgroundColor = .white.withAlphaComponent(0.2)
-        label.font = UIFont.systemFont(ofSize: 20)
+//        label.backgroundColor = .white.withAlphaComponent(0.2)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
         label.numberOfLines = 1
         label.adjustsFontSizeToFitWidth = true
-        label.sizeToFit()
-        label.textAlignment = .center
+//        label.sizeToFit()
+//        label.textAlignment = .center
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(tapLabel)
         return label
@@ -53,28 +42,27 @@ final class DetailViewController: UIViewController {
         return textview
     }()
 
-    private lazy var like: UIButton = {
-        let like = UIButton()
-        like.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        like.setImage(UIImage(systemName: "heart"), for: .selected)
-        like.tintColor = .red
-        like.addTarget(self, action: #selector(likeTaped), for: .touchUpInside)
-        return like
-    }()
-
     private lazy var imageView: UIImageView = {
         let img = UIImageView()
         img.image = CacheService.shared.getObject(forKey: urlForCache as AnyObject) ?? UIImage(systemName: "swiftdata")
-        img.contentMode = .scaleAspectFill
+        img.contentMode = .scaleAspectFit
         img.isUserInteractionEnabled = true
-        
-        let tapLabel = UITapGestureRecognizer(target: self, action: #selector(tappedImage))
-        img.addGestureRecognizer(tapLabel)
+        img.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tappedImage)))
         return img
     }()
-
+    
+//    MARK: - UI Button
+    private lazy var like: UIBarButtonItem = {
+        let like = UIBarButtonItem()
+        like.image = like.isSelected ? UIImage(systemName: "heart") : UIImage(systemName: "heart.fill")
+        like.tintColor = .red
+        like.hidesSharedBackground = true
+        like.action = #selector(likeTaped)
+        like.target = self
+        return like
+    }()
+    
     // MARK: - Init
-
     init(model: UnsplashModel) {
         self.model = model
         super.init(nibName: nil, bundle: nil)
@@ -85,46 +73,39 @@ final class DetailViewController: UIViewController {
     }
 
     // MARK: - LifeCycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
         self.view.layer.contents = UIImage(blurHash: model.blur_hash!, size: CGSize(width: 35, height: 35))?.cgImage
         self.view.layer.contentsGravity = .resizeAspectFill
+        configNavBar()
     }
 
     // MARK: - Actions
-
     @objc private func tappedLabel() {
-        guard let urlProfile else { return }
-        let web = WebView(url: urlProfile)
+        guard let urlForProfile else { return }
+        let web = WebView(url: urlForProfile)
         let nav = UINavigationController(rootViewController: web)
         present(nav, animated: true)
     }
-
-    @objc private func backTaped() { dismiss(animated: true) }
     
     @objc private func tappedImage() {
-        print("tap - tap")
+        let indicate = createIndicator()
+        indicate.startAnimating()
+        
         guard let urlForImageFullScreen else { return }
         guard let url = URL(string: urlForImageFullScreen) else { return }
         
         let download = URLSession.shared.dataTask(
             with: URLRequest(url: url)) {[weak self] data, response, error in
-                print("tap - tap")
-                guard let self else { return }
-                guard error == nil else { return }
-                guard let data else { return }
-                if UIImage(data: data) != nil {
+                guard let self,
+                        error == nil,
+                        let data else { return }
+                if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
-                        print("tap - download")
-                        let alert = UIAlertController(title: "Full Screen", message: nil, preferredStyle: .alert)
-                        let button = UIAlertAction(title: "Ok", style: .cancel) { _ in
-                            alert.dismiss(animated: true)
-                        }
-                        alert.addAction(button)
-                        self.present(alert, animated: true)
-                        print("tap - alert")
+                        let vcFull = FullScreenViewController(image: image)
+                        self.navigationController?.pushViewController(vcFull, animated: true)
+                        indicate.stopAnimating()
                     }
                 }
             }
@@ -135,51 +116,40 @@ final class DetailViewController: UIViewController {
     @objc private func likeTaped() {
         like.isSelected.toggle()
         let alert = UIAlertAction(title: "Ok", style: .default)
-        let uIAlertController = UIAlertController(
-            title: "Like ❤️",
-            message: "You liked this image",
-            preferredStyle: .actionSheet
-        )
+        let uIAlertController = UIAlertController( title: "Like ❤️", message: "You liked this image", preferredStyle: .actionSheet)
         uIAlertController.addAction(alert)
         present(uIAlertController, animated: true)
     }
-
+    
+    func createIndicator() -> UIActivityIndicatorView {
+        let indicate = UIActivityIndicatorView(style: .large)
+        self.view.addSubview(indicate)
+        indicate.center = view.center
+        indicate.color = .black
+        return indicate
+    }
+    
     // MARK: - UI Setup
-
+    private func configNavBar() {
+        navigationItem.titleView = titleAuthor
+        navigationItem.rightBarButtonItem = like
+    }
+    
     private func setLayout() {
         view.addSubview(imageView)
         view.addSubview(titleForImage)
-        view.addSubview(buttonBack)
-        view.addSubview(titleAuthor)
-        view.addSubview(like)
-
+        
         imageView.translatesAutoresizingMaskIntoConstraints = false
         titleForImage.translatesAutoresizingMaskIntoConstraints = false
-        titleAuthor.translatesAutoresizingMaskIntoConstraints = false
-        buttonBack.translatesAutoresizingMaskIntoConstraints = false
-        like.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
             imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60),
-            
-            buttonBack.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 10),
-            buttonBack.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 20),
-            buttonBack.widthAnchor.constraint(equalToConstant: 50),
-            buttonBack.heightAnchor.constraint(equalToConstant: 25),
-            
-            titleAuthor.leadingAnchor.constraint(greaterThanOrEqualTo: buttonBack.trailingAnchor,constant: 25),
-            titleAuthor.trailingAnchor.constraint(lessThanOrEqualTo: imageView.trailingAnchor, constant: -2),
-            titleAuthor.centerYAnchor.constraint(equalTo: buttonBack.centerYAnchor),
-            titleAuthor.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
-            
-            like.centerYAnchor.constraint(equalTo: titleAuthor.centerYAnchor),
-            like.trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: -10),
-            
+
             titleForImage.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
-            titleForImage.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            titleForImage.centerYAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -50),
             titleForImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5)
         ])
     }

@@ -126,9 +126,6 @@ final class HomeTableViewController: UITableViewController {
 }
 
 
-
-
-
 // MARK: - NumberOfRowsInSection
 
 extension HomeTableViewController {
@@ -173,14 +170,10 @@ extension HomeTableViewController {
 extension HomeTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = DetailViewController(model: unsplashModels[indexPath.row])
-        detailVC.modalPresentationStyle = .fullScreen
-        present(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
 
 // MARK: - Previews
 //#Preview { HomeTableViewController() }
-
-
-//"test"
