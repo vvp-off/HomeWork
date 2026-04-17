@@ -17,8 +17,7 @@ final class HomeTableViewController: UITableViewController {
     private let refresh = UIRefreshControl()
     private lazy var footerLoader = createFooter()
     
-    // MARK: - Lifecycle
-    
+    // MARK: - Lifecycl
     override func viewDidLoad() {
         super.viewDidLoad()
         update(for: currentPage)
@@ -27,30 +26,32 @@ final class HomeTableViewController: UITableViewController {
     }
     
     // MARK: - UIScrollViewDelegate
-    
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height - dashBreakScroll  && !isLoadingList{
             self.loadMoreItemsForList()
             self.isLoadingList = true
-            
-            let footerHeight: CGFloat = 80
-            let containerForFooter = UIView(frame: .init(x: 0, y: 0, width: tableView.bounds.width, height: footerHeight))
-            containerForFooter.addSubview(footerLoader)
-            
-            footerLoader.translatesAutoresizingMaskIntoConstraints = false
-            footerLoader.frame.size.width = tableView.bounds.width
-            footerLoader.frame.size.height = 80
-            
-            NSLayoutConstraint.activate([
-                footerLoader.centerXAnchor.constraint(equalTo: containerForFooter.centerXAnchor),
-                footerLoader.centerYAnchor.constraint(equalTo: containerForFooter.centerYAnchor)
-            ])
-            
-            tableView.tableFooterView = containerForFooter
+            configFooter()
         }
     }
     
     // MARK: - Private Methods
+    private func configFooter() {
+        let footerHeight: CGFloat = 80
+        let containerForFooter = UIView(frame: .init(x: 0, y: 0, width: tableView.bounds.width, height: footerHeight))
+        
+        containerForFooter.addSubview(footerLoader)
+        
+        footerLoader.translatesAutoresizingMaskIntoConstraints = false
+        footerLoader.frame.size.width = tableView.bounds.width
+        footerLoader.frame.size.height = 80
+        
+        NSLayoutConstraint.activate([
+            footerLoader.centerXAnchor.constraint(equalTo: containerForFooter.centerXAnchor),
+            footerLoader.centerYAnchor.constraint(equalTo: containerForFooter.centerYAnchor)
+        ])
+        
+        tableView.tableFooterView = containerForFooter
+    }
     
     private func loadMoreItemsForList(){
         currentPage += 1
@@ -108,19 +109,25 @@ final class HomeTableViewController: UITableViewController {
     
     private func update(for page: Int, completion: (() -> Void)? = nil) {
         APIManager.shared.getImage(page: page) { [weak self] newUnsplashModels in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                let startIndex = self.unsplashModels.count
-                
-                self.unsplashModels.append(contentsOf: newUnsplashModels)
-                self.isLoadingList = false
-                
-                let newIndexPaths = (startIndex..<self.unsplashModels.count).map {
-                    IndexPath(row: $0, section: 0)
+            switch newUnsplashModels {
+            case .success(let success):
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    let startIndex = self.unsplashModels.count
+                    
+                    self.unsplashModels.append(contentsOf: success)
+                    self.isLoadingList = false
+                    
+                    let newIndexPaths = (startIndex..<self.unsplashModels.count).map {
+                        IndexPath(row: $0, section: 0)
+                    }
+                    self.tableView.insertRows(at: newIndexPaths, with: .fade)
+                    completion?()
                 }
-                self.tableView.insertRows(at: newIndexPaths, with: .fade)
-                completion?()
+            case .failure(let failure):
+                print("error: \(failure)")
             }
+
         }
     }
 }
@@ -176,4 +183,4 @@ extension HomeTableViewController {
 
 
 // MARK: - Previews
-//#Preview { HomeTableViewController() }
+#Preview { HomeTableViewController() }
